@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Gym Tracker</title>
+  <title>Login</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,18 +10,14 @@
 </head>
 
 <body>
-  <div class="navbar">
-    <a href="index.html" class="active">Home</a>
-    <a href="progress.html">Progress</a>
-  </div>
+  <h2>Login</h2>
 
-  <script src="script.js"></script>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-  </script>
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Register</button>
 
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
