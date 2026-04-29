@@ -1,0 +1,20 @@
+{
+  "name": "Gym Tracker",
+  "short_name": "Gym",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a90e2",
+  "icons": [
+    {
+      "src": "icons/weightlifting-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/gym-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

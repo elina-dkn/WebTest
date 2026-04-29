@@ -1,0 +1,99 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  max-width: 500px;
+  background: #f5f5f5;
+}
+
+h2 {
+  text-align: center;
+}
+
+/* Add bar */
+.userId {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.userId input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.userId button {
+  padding: 12px;
+}
+
+/* Cards */
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+}
+
+.exercise-name {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.weight-input {
+  width: 100px;
+  padding: 10px;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Nav */
+.navbar {
+  background-color: #333;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Style the links inside the navigation bar */
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a green background color to the active link */
+.navbar a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+
+/* Chart */
+canvas {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+}
