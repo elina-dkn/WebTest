@@ -10,13 +10,21 @@
 </head>
 
 <body>
-  <h2>Login</h2>
+  <h2>Workout Froggy</h2>
+  <div class="identification">
+    <div class="login">
+      <input class="userId" id="email" placeholder="Email">
+      <input class="userId" id="password" type="password" placeholder="Password">
+    </div>
 
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
+    <div class="buttonsContainer">
+      <button class="auth" onclick="login()">Login</button>
+      <button class="auth" onclick="register()">Register</button>
+    </div>
+  </div>
 
-  <button onclick="login()">Login</button>
-  <button onclick="register()">Register</button>
+
+
 
   <script type="module" src="auth.js"></script>
 </body>

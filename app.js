@@ -43,7 +43,7 @@ async function render() {
     div.innerHTML = `
       <b>${ex.name}</b>
       <input type="number" placeholder="Weight">
-      <button>Delete</button>
+      <button class="delete-btn">Delete</button>
     `;
 
     const input = div.querySelector("input");
