@@ -5,13 +5,13 @@ body {
   font-family: Arial, sans-serif;
   margin: 5%;
   max-width: 500px;
-  background: slategrey;
+  background: #302939;
 }
 
 h2 {
   text-align: center;
   font-size: 35px;
-  color: darkgreen;
+  color: #ffd8d8;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,7 +22,7 @@ h2 {
 h3{
   text-align: center;
   font-size: 35px;
-  color: darkgreen;
+  color: #ffd8d8;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,16 +30,16 @@ h3{
 
 .identification{
   margin-top: 50%;
-  margin-left: -5%;
+  margin-left: -2.5%;
   display: grid;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 87.5%;
   padding: 20px;
 
   font-size: 26px;
-  background: darkgreen;
-  border: darkslategray 8px solid;
+  background: #e99b9b;
+  border: #50595c 8px solid;
   border-radius: 50px;
   gap: 10px;
 }
@@ -56,9 +56,8 @@ h3{
   display: flex;
   justify-content: center;
   align-items: center;
-  background: darkgray;
-  color: slategrey;
-  border: darkslategray 3px groove;
+  background: #e99b9b;
+  border: #50595c 3px groove;
   padding: 10px;
   border-radius: 20px;
   gap: 10px;
@@ -66,21 +65,32 @@ h3{
 
 .auth{
   background: none;
-  color: black;
+  color: #302939;
   border: none;
   padding: 10px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 22px;
 }
 .userId {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
-  background: darkgrey;
-  font-size: 16px;
+  background: #e99b9b;
+  font-size: 22px;
+  color: #302939;
+  border: 3px solid #50595c;
+  border-radius: 50px;
 }
 
+.userId:focus {
+  outline: none;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #e99b9b inset !important;
+  -webkit-text-fill-color: black !important; /* Set your desired text color */
+}
 
 /* Cards */
 .card {
@@ -119,13 +129,14 @@ h3{
 
 /* Nav */
 .navbar {
-  background-color: #333;
+  background-color: #ffb6b9;
   overflow: hidden;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 0px;
+  height: 60px;
+  padding: 0;
   margin: 0;
 }
 
@@ -133,23 +144,23 @@ h3{
 .navbar a {
   float: left;
   display: block;
-  color: #f2f2f2;
+  color: black;
   text-align: center;
-  padding: 14px 16px;
+  padding: 17px 30px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 22px;
 }
 
 /* Change the color of links on hover */
 .navbar a:hover {
-  background-color: #ddd;
+  background-color: #ffd8d8;
   color: black;
 }
 
 /* Add a green background color to the active link */
 .navbar a.active {
-  background-color: #04AA6D;
-  color: white;
+  background-color: #50595c;
+  color: #ffd8d8;
 }
 
 
