@@ -4,8 +4,11 @@ const urlsToCache = [
   "index.html",
   "progress.html",
   "style.css",
-  "script.js",
-  "progress.js"
+  "progress.js",
+    "app.js",
+    "app.html",
+    "auth.js",
+    "firebase.js"
 ];
 
 self.addEventListener("install", event => {
