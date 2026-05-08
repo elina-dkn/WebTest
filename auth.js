@@ -9,7 +9,7 @@ window.login = async function () {
   const password = document.getElementById("password").value;
 
   await signInWithEmailAndPassword(auth, email, password);
-  window.location.href = "app.html";
+  window.location.href = "index.html";
 };
 
 window.register = async function () {
@@ -17,5 +17,5 @@ window.register = async function () {
   const password = document.getElementById("password").value;
 
   await createUserWithEmailAndPassword(auth, email, password);
-  window.location.href = "app.html";
+  window.location.href = "index.html";
 };

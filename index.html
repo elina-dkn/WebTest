@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>Workout</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <h2>Workout Froggy</h2>
-  <div class="identification">
-    <div class="login">
-      <input class="userId" id="email" placeholder="Email">
-      <input class="userId" id="password" type="password" placeholder="Password">
-    </div>
 
-    <div class="buttonsContainer">
-      <button class="auth" onclick="login()">Login</button>
-      <button class="auth" onclick="register()">Register</button>
-    </div>
-  </div>
+<h3>Workout</h3>
 
+<button onclick="logout()">Logout</button>
 
+<div class="add-bar">
+  <input id="newExercise" placeholder="New exercise">
+  <button onclick="addExercise()">Add</button>
+</div>
 
+<div id="list"></div>
 
-  <script type="module" src="auth.js"></script>
+<footer class="navbar">
+  <a href="progress.html">Progress</a>
+</footer>
+
+<script type="module" src="app.js"></script>
+
 </body>
 </html>

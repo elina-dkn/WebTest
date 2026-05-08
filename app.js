@@ -12,7 +12,7 @@ let user;
 
 onAuthStateChanged(auth, async (u) => {
   if (!u) {
-    window.location.href = "index.html";
+    window.location.href = "auth.html";
     return;
   }
 

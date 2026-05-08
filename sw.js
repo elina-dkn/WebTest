@@ -1,12 +1,12 @@
 const CACHE_NAME = "gym-tracker-v2";
 
 const urlsToCache = [
-  "index.html",
+  "auth.html",
   "progress.html",
   "style.css",
   "progress.js",
     "app.js",
-    "app.html",
+    "index.html",
     "auth.js",
     "firebase.js"
 ];
