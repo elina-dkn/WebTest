@@ -20,7 +20,10 @@ onAuthStateChanged(auth, async (u) => {
   render();
 });
 
-window.logout = () => signOut(auth);
+window.logout = () => {
+  signOut(auth);
+  window.location.href = "auth.html";
+}
 
 function col() {
   return collection(db, "users", user.uid, "exercises");
