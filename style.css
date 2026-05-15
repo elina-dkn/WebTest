@@ -224,3 +224,7 @@ canvas {
   border: 3px solid #50595c;
   border-radius: 50px;
 }
+
+.dialog{
+  background: #302939;
+}
