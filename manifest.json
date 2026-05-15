@@ -7,7 +7,7 @@
   "theme_color": "#4a90e2",
   "icons": [
     {
-      "src": "icons/weightlifting-icon.png",
+      "src": "icons/gym.png",
       "sizes": "192x192",
       "type": "image/png"
     },
