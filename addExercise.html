@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="content">
+    <h3>Add Exercise</h3>
+
+    <div class="addbar">
+        <div class="inputfield">
+            <input class="addinput" id="newExercise" placeholder="exercise name" type="text">
+            <input class="addinput" id="newExerciseWeight" placeholder="weight" type="number">
+            <select class="addinput" id="selectSplit"></select>
+        </div>
+
+        <button onclick="addExercise()" class="button">Add</button>
+    </div>
+</div>
+
+<footer class="navbar">
+    <a href="index.html">Home</a>
+    <a href="exerciseList.html" class="active">My Exercises</a>
+    <a href="progress.html">Progress</a>
+    <a href="user.html">Profile</a>
+</footer>
+
+
+
+<script type="module" src="app.js"></script>
+<script type="module" src="addExercise.js"></script>
+</body>
+</html>

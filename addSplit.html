@@ -6,20 +6,21 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="content">
-  <h3>Workout Split</h3>
-  <div class="addNewExercise">
-    <a href="addSplit.html" class="button">Add split</a>
+  <h3>Add Split</h3>
+
+  <div class="addbar">
+    <div class="inputfield">
+      <input class="addinput" id="newSplit" placeholder="Split name" type="text">
+    </div>
+
+    <button onclick="addSplit()" class="button">Add</button>
   </div>
-
-  <div id="list"></div>
-
 </div>
 
 <footer class="navbar">
   <a href="index.html" class="active">Home</a>
-  <a href="exerciseList.html">My Exercises</a>
+  <a href="exerciseList.html" >My Exercises</a>
   <a href="progress.html">Progress</a>
   <a href="user.html">Profile</a>
 </footer>

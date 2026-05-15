@@ -7,18 +7,21 @@
 </head>
 <body>
 <div class="content">
-    <h3>Profile</h3>
+    <h3>My Exercises</h3>
 
-    <button onclick="logout()">Logout</button>
+    <div class="addNewExercise">
+        <a href="addExercise.html" class="button">Add exercise</a>
+    </div>
 
+    <div id="list"></div>
 </div>
-
+</div>
 
 <footer class="navbar">
     <a href="index.html">Home</a>
-    <a href="exerciseList.html">My Exercises</a>
+    <a href="exerciseList.html" class="active">My Exercises</a>
     <a href="progress.html">Progress</a>
-    <a href="user.html" class="active">Profile</a>
+    <a href="user.html">Profile</a>
 </footer>
 
 <script type="module" src="app.js"></script>

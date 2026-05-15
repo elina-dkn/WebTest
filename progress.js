@@ -8,10 +8,10 @@ import {
 let chart;
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return;
+  if (!user) window.location.href = "auth.html";
 
   const exercisesSnap = await getDocs(
-    collection(db, "users", user.uid, "exercises")
+      collection(db, "users", user.uid, "exercises")
   );
 
   const exercises = exercisesSnap.docs;

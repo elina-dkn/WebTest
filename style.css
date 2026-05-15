@@ -7,7 +7,9 @@ body {
   max-width: 500px;
   background: #302939;
 }
-
+.content{
+  padding-bottom: 90px;
+}
 h2 {
   text-align: center;
   font-size: 35px;
@@ -98,11 +100,13 @@ input:-webkit-autofill {
   justify-content: center;
   align-items: center;
   background: white;
-  padding: 15px;
+  padding: 30px;
   margin-bottom: 10px;
   border-radius: 12px;
 }
-
+.latest-weight{
+  padding: 10px;
+}
 .exercise-name {
   width: 100%;
   padding: 10px;
@@ -127,6 +131,15 @@ input:-webkit-autofill {
   border-radius: 8px;
 }
 
+.button{
+  background-color: #e99b9b;
+  color: black;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+}
+
 /* Nav */
 .navbar {
   background-color: #ffb6b9;
@@ -134,10 +147,15 @@ input:-webkit-autofill {
   position: fixed;
   bottom: 0;
   left: 0;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
   width: 100%;
-  height: 100px;
-  padding: 0;
+  height: 70px;
   margin: 0;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Style the links inside the navigation bar */
@@ -146,7 +164,7 @@ input:-webkit-autofill {
   display: block;
   color: black;
   text-align: center;
-  padding: 42px 15px;
+  padding: 40px;
   text-decoration: none;
   font-size: 15px;
 }
@@ -169,4 +187,39 @@ canvas {
   background: white;
   border-radius: 12px;
   padding: 10px;
+}
+
+.addbar{
+  margin-top: 50%;
+  margin-left: -2.5%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  width: 87.5%;
+  padding: 20px;
+
+  font-size: 26px;
+  background: #e99b9b;
+  border: #50595c 8px solid;
+  border-radius: 50px;
+  gap: 10px;
+}
+
+.inputfield{
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.addinput{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  background: #e99b9b;
+  font-size: 22px;
+  color: #302939;
+  border: 3px solid #50595c;
+  border-radius: 50px;
 }
