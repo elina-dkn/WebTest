@@ -161,7 +161,7 @@ input:-webkit-autofill {
 /* Style the links inside the navigation bar */
 .navbar a {
   float: left;
-  display: block;
+  flex: 1;
   color: black;
   text-align: center;
   padding: 40px;
