@@ -228,3 +228,8 @@ canvas {
 .dialog{
   background: #302939;
 }
+
+::placeholder {
+  color: #302939;
+  opacity: 1;
+}
