@@ -5,7 +5,7 @@ import {
     getDocs,
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { setSplit } from "./app.js";
+
 
 
 onAuthStateChanged(auth, async (user) => {
@@ -26,7 +26,6 @@ onAuthStateChanged(auth, async (user) => {
         option.textContent = docSnap.name;
         select.appendChild(option);
     });
-    setSplit(splits[0].id);
-    select.onchange = () => setSplit(select.value);
+    
 
 });

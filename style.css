@@ -105,12 +105,18 @@ input:-webkit-autofill {
   border-radius: 12px;
 }
 .latest-weight{
-  padding: 10px;
+  padding: 0px;
 }
 .exercise-name {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .row {

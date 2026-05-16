@@ -1,368 +1,195 @@
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { auth } from "./firebase.js";
+import { state } from "./state.js";
+
 import {
-  collection,
-  addDoc,
-  getDocs,
-  getDoc,
-  doc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-let user;
-let split;
+import {
+  getExercises,
+  getSplits,
+  getSplitExercises,
+  createExercise,
+  createSplit,
+  deleteExercise,
+  deleteSplit,
+  removeExerciseFromSplit,
+  migrateLatestWeights
+} from "./db.js";
 
-onAuthStateChanged(auth, async (u) => {
-  if (!u) {
-    window.location.href = "auth.html";
+import {
+  createExerciseCard,
+  createSplitCard
+} from "./ui.js";
+
+
+const currentPage =
+    location.pathname.split("/").pop();
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    location.href = "auth.html";
     return;
   }
-
-  user = u;
-  if (window.location.pathname.includes("exerciseList.html")) {
-    await render();
-  }else{
+  state.user = user;
+  await migrateLatestWeights();
+  if (currentPage === "exerciseList.html") {
+    await renderExercises();
+  }
+  else if (currentPage === "index.html") {
     await renderSplits();
   }
-
 });
 
-window.logout = () => {
-  signOut(auth);
-  window.location.href = "auth.html";
-}
+window.logout = async () => {
 
-function col() {
-  return collection(db, "users", user.uid, "exercises");
-}
+  await signOut(auth);
 
-function colSplit() {
-  return collection(db, "users", user.uid, "splits");
-}
+  location.href = "auth.html";
+};
 
-async function getData() {
-  const snap = await getDocs(col());
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
 
-async function getDataSplits() {
-  const snap = await getDocs(colSplit());
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
+async function renderExercises() {
 
-async function render() {
-  const data = await getData();
   const list = document.getElementById("list");
+
   list.innerHTML = "";
 
-  for (const ex of data) {
+  const exercises = await getExercises();
 
-    const logsSnap = await getDocs(
-        collection(
-            db,
-            "users",
-            user.uid,
-            "exercises",
-            ex.id,
-            "logs"
-        )
-    );
+  for (const exercise of exercises) {
 
-    const logs = logsSnap.docs.map(doc => doc.data());
+    const card = createExerciseCard({
 
-    logs.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-    );
+      exercise,
 
-    const latestWeight =
-        logs.length > 0
-            ? logs[0].weight
-            : "-";
+      onDelete: async () => {
+        await deleteExercise(exercise.id);
+      }
+    });
 
-    const div = document.createElement("div");
-
-    div.className = "card";
-
-    div.innerHTML = `
-    <b>${ex.name}</b>
-
-    <div class="latest-weight">
-      Last: ${latestWeight} kg
-    </div>
-
-    <input type="number" placeholder="Weight">
-
-    <button class="delete-btn">
-      Delete
-    </button>
-  `;
-
-
-    const input = div.querySelector("input");
-
-    input.onchange = async () => {
-      const logsRef = collection(db, "users", user.uid, "exercises", ex.id, "logs");
-
-      await addDoc(logsRef, {
-        date: new Date().toISOString(),
-        weight: Number(input.value)
-      });
-    };
-
-    div.querySelector("button").onclick = () =>
-      deleteDoc(doc(db, "users", user.uid, "exercises", ex.id)) && render();
-
-    list.appendChild(div);
+    list.appendChild(card);
   }
 }
 
 async function renderSplits() {
-  const data = await getDataSplits();
+
   const list = document.getElementById("list");
+
   list.innerHTML = "";
 
-  for (const ex of data) {
+  const splits = await getSplits();
 
-    const div = document.createElement("div");
+  for (const split of splits) {
 
-    div.className = "card";
-    div.addEventListener("click", () => openSplit(ex.id, ex.name));
+    const card = createSplitCard(
 
-    div.innerHTML = `
-    <b>${ex.name}</b>
+        split,
 
-    <button class="delete-btn">
-      Delete
-    </button>
-  `;
+        () => openSplit(split),
 
-
-    div.querySelector("button").onclick = () =>
-        deleteDoc(doc(db, "users", user.uid, "splits", ex.id)) && renderSplits();
-
-    list.appendChild(div);
-  }
-}
-
-async function openSplit(exID, exName) {
-  const dialog = document.getElementById("splitDialog");
-  dialog.innerHTML = "";
-  const div = document.createElement("dialog");
-  div.className = "dialog";
-  const p = document.createElement("h3");
-  p.textContent = exName;
-  div.appendChild(p);
-  dialog.appendChild(div);
-
-
-
-  const itemsSnap = await getDocs(
-        collection(
-            db,
-            "users",
-            user.uid,
-            "splits",
-            exID,
-            "items"
-        )
+        async () => {
+          await deleteSplit(split.id);
+        }
     );
 
-  const items = itemsSnap.docs.map(doc => ({
-    itemId: doc.id,
-    ...doc.data()
-  }));
+    list.appendChild(card);
+  }
+}
+async function openSplit(split) {
 
-  if(items.length > 0) {
-    for (const i of items) {
-      const exRef = doc(db, "users", user.uid, "exercises", i.exerciseId);
-      const exSnap = await getDoc(exRef);
+  const dialogContainer =
+      document.getElementById("splitDialog");
 
-      if (!exSnap.exists()) {
-        console.log("Exercise not found");
+  dialogContainer.innerHTML = "";
 
-        await deleteDoc(
-            doc(
-                db,
-                "users",
-                user.uid,
-                "splits",
-                exID,
-                "items",
-                i.itemId
-            )
-        );
+  const dialog = document.createElement("dialog");
 
-        continue;
-      }
+  dialog.className = "dialog";
 
-      const logsSnap = await getDocs(collection(exRef, "logs"));
-      const logs = logsSnap.docs.map(doc => doc.data());
-
-      logs.sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-      );
-
-      const latestWeight =
-          logs.length > 0
-              ? logs[0].weight
-              : "-";
-
-      const exercise = exSnap.data();
-      console.log(exercise.name);
-      const divContainer = document.createElement("div");
-
-      divContainer.className = "card";
-
-      divContainer.innerHTML = `
-    <b>${exercise.name}</b>
-
-    <div class="latest-weight">
-      Last: ${latestWeight} kg
-    </div>
-
-    <input type="number" placeholder="Weight">
-
-    <button class="delete-btn">
-      Delete from split
-    </button>
+  dialog.innerHTML = `
+    <h3>${split.name}</h3>
   `;
 
+  dialogContainer.appendChild(dialog);
 
-      const input = divContainer.querySelector("input");
+  const exercises =
+      await getSplitExercises(split.id);
 
-      input.onchange = async () => {
-        const logsRef = collection(exRef, "logs");
+  for (const exercise of exercises) {
 
-        await addDoc(logsRef, {
-          date: new Date().toISOString(),
-          weight: Number(input.value)
-        });
-      };
+    const card = createExerciseCard({
 
-      divContainer.querySelector("button").onclick = async () =>
-          await deleteDoc(
-              doc(
-                  db,
-                  "users",
-                  user.uid,
-                  "splits",
-                  exID,
-                  "items",
-                  i.itemId
-              )
-          );
+      exercise,
 
-      div.appendChild(divContainer);
-    }
+      onDelete: async () => {
 
-    const closeButton = document.createElement("button");
-    closeButton.innerHTML = "Close";
-    closeButton.id = "close";
-    closeButton.className = "button";
-    div.appendChild(closeButton);
+        await removeExerciseFromSplit(
+            split.id,
+            exercise.itemId
+        );
+      }
+    });
 
-    closeButton.addEventListener("click", () => div.close());
-    div.showModal();
+    dialog.appendChild(card);
   }
 
+  const closeButton = document.createElement("button");
 
+  closeButton.className = "button";
+
+  closeButton.textContent = "Close";
+
+  closeButton.onclick = () => dialog.close();
+
+  dialog.appendChild(closeButton);
+
+  dialog.showModal();
 }
 
+window.addExercise = async () => {
 
+  const nameInput =
+      document.getElementById("newExercise");
 
+  const weightInput =
+      document.getElementById("newExerciseWeight");
 
-window.addExercise = async function () {
-  const inputName = document.getElementById("newExercise");
-  const inputWeight = document.getElementById("newExerciseWeight");
+  const splitSelect =
+      document.getElementById("selectSplit");
 
-  const name = inputName.value.trim();
-  const weight = Number(inputWeight.value);
+  const name = nameInput.value.trim();
+
+  const weight = weightInput.value;
 
   if (!name) return;
 
-  // CREATE EXERCISE
-  const exerciseRef = await addDoc(
-      collection(
-          db,
-          "users",
-          user.uid,
-          "exercises"
-      ),
-      {
-        name: name
-      }
+  await createExercise(
+      name,
+      weight,
+      splitSelect.value
   );
 
-  // CREATE FIRST LOG
-  if (inputWeight.value !== "") {
+  nameInput.value = "";
+  weightInput.value = "";
 
-    await addDoc(
-        collection(
-            db,
-            "users",
-            user.uid,
-            "exercises",
-            exerciseRef.id,
-            "logs"
-        ),
-        {
-          weight: weight,
-          date: new Date().toISOString()
-        }
-    );
-  }
-
-  if (split.value !== "") {
-    await addDoc(
-        collection(
-            db,
-            "users",
-            user.uid,
-            "splits",
-            split,
-            "items"
-        ),
-        {
-          exerciseId: exerciseRef.id
-        }
-    );
-  }
-
-  inputName.value = "";
-  inputWeight.value = "";
-  //split = "";
-  await render();
+  await renderExercises();
 };
 
+window.addSplit = async () => {
 
-window.addSplit = async function () {
-  const inputName = document.getElementById("newSplit");
+  const input =
+      document.getElementById("newSplit");
 
-  const name = inputName.value.trim();
+  const name = input.value.trim();
 
   if (!name) return;
 
-  // CREATE EXERCISE
-  const splitRef = await addDoc(
-      collection(
-          db,
-          "users",
-          user.uid,
-          "splits"
-      ),
-      {
-        name: name
-      }
-  );
+  await createSplit(name);
 
+  input.value = "";
 
-
-  inputName.value = "";
   await renderSplits();
 };
-
-export function setSplit(value){
-  split = value;
-}
-
-
