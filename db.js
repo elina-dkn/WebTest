@@ -15,9 +15,6 @@ function userPath(...segments) {
     return ["users", state.user.uid, ...segments];
 }
 
-export function setSplit(splitId) {
-    const split = splitId;
-}
 
 export async function getExercises() {
     const snap = await getDocs(
@@ -25,9 +22,10 @@ export async function getExercises() {
     );
 
     return snap.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-    }));
+            id: d.id,
+            ...d.data()
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }
 export async function getSplits() {
     const snap = await getDocs(
@@ -40,13 +38,15 @@ export async function getSplits() {
     }));
 }
 
-export async function createExercise(name, weight, splitId) {
+export async function createExercise(name, weight, sets, reps, splitId) {
 
     const exerciseRef = await addDoc(
         collection(db, ...userPath("exercises")),
         {
             name,
-            latestWeight: weight || null
+            latestWeight: weight || null,
+            sets: 0 || null,
+            reps: 0 || null
         }
     );
     if (weight !== "") {
@@ -67,22 +67,44 @@ export async function createExercise(name, weight, splitId) {
         );
     }
 
+    if (sets !== "" && reps !== ""){
+
+        await setReps(exerciseRef, reps);
+        await setSets(exerciseRef, sets);
+    }
+
     if (splitId) {
 
-        await addDoc(
-            collection(
-                db,
-                ...userPath(
-                    "splits",
-                    splitId,
-                    "items"
-                )
-            ),
-            {
-                exerciseId: exerciseRef.id
-            }
-        );
+        await setExerciseSplit(exerciseRef.id, splitId);
     }
+}
+
+async function setReps(exerciseRef, reps){
+    await updateDoc(exerciseRef, {
+        reps: reps
+    });
+}
+
+async function setSets(exerciseRef, sets){
+    await updateDoc(exerciseRef, {
+        sets: sets
+    });
+}
+
+async function setExerciseSplit(exerciseId, splitId){
+    await addDoc(
+        collection(
+            db,
+            ...userPath(
+                "splits",
+                splitId,
+                "items"
+            )
+        ),
+        {
+            exerciseId: exerciseId
+        }
+    );
 }
 
 export async function addWeight(exerciseId, weight) {

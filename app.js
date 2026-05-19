@@ -157,6 +157,12 @@ window.addExercise = async () => {
   const weightInput =
       document.getElementById("newExerciseWeight");
 
+  const setsInput =
+      document.getElementById("newExerciseSets");
+
+  const repsInput =
+      document.getElementById("newExerciseReps");
+
   const splitSelect =
       document.getElementById("selectSplit");
 
@@ -164,16 +170,24 @@ window.addExercise = async () => {
 
   const weight = weightInput.value;
 
+  const sets = setsInput.value;
+
+  const reps = repsInput.value;
+
   if (!name) return;
 
   await createExercise(
       name,
       weight,
+      sets,
+      reps,
       splitSelect.value
   );
 
   nameInput.value = "";
   weightInput.value = "";
+  setsInput.value = "";
+  repsInput.value = "";
 
   await renderExercises();
 };
