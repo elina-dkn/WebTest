@@ -47,7 +47,7 @@ export function createExerciseCard({
         if (!weight) return;
 
         await addWeight(
-            exercise.id,
+            exercise.id || exercise.exerciseId,
             weight
         );
         exercise.latestWeight = weight;

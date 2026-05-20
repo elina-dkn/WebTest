@@ -187,8 +187,10 @@ export async function getSplitExercises(splitId) {
                     item.exerciseId
                 )
             );
-
+            console.log("exRef:", exRef);
             const exSnap = await getDoc(exRef);
+            console.log("exSnap:", exSnap);
+            console.log("exSnap data:", exSnap.data());
             if (!exSnap.exists()) {
 
                 await deleteDoc(
@@ -209,6 +211,7 @@ export async function getSplitExercises(splitId) {
             return {
                 itemId: item.itemId,
                 exerciseId: item.exerciseId,
+                ref: exRef,
                 ...exSnap.data()
             };
         })
