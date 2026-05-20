@@ -1,5 +1,7 @@
 import {
     addWeight,
+    setSets,
+    setReps,
     deleteExercise,
     removeExerciseFromSplit
 } from "./db.js";
@@ -23,14 +25,20 @@ export function createExerciseCard({
         Last: ${exercise.latestWeight ?? "-"}
         </div>
 
-        <input type="number" placeholder="Weight">
+        <input class="weight-input" type="number" placeholder="Weight">
+        <div class="latest-sets">
+        Last: ${exercise.sets ?? "-"}x${exercise.reps ?? "-"}
+        </div>
+        <input class="sets-input" type="number" placeholder="Sets">
+        <input class="reps-input" type="number" placeholder="Reps">
 
         <button class="delete-btn">
             Delete
         </button>
     </div>
     `;
-    const input = card.querySelector("input");
+
+    const input = card.querySelector(".weight-input");
 
     input.onchange = async () => {
 
@@ -39,14 +47,52 @@ export function createExerciseCard({
         if (!weight) return;
 
         await addWeight(
-            exercise.exerciseId || exercise.id,
+            exercise.id,
             weight
         );
+        exercise.latestWeight = weight;
 
         card.querySelector(".latest-weight").textContent =
-            `Last: ${weight} kg`;
+            `Last: ${weight} `;
 
         input.value = "";
+    };
+
+    const inputS = card.querySelector(".sets-input");
+
+    inputS.onchange = async () => {
+
+        const sets = Number(inputS.value);
+
+        if (!sets) return;
+
+        await setSets(
+            exercise.ref,
+            sets);
+        exercise.sets = sets;
+        card.querySelector(".latest-sets").textContent =
+            `Last: ${sets}x${exercise.reps}`;
+
+        inputS.value = "";
+    };
+
+    const inputR = card.querySelector(".reps-input");
+
+    inputR.onchange = async () => {
+
+        const reps = Number(inputR.value);
+
+        if (!reps) return;
+
+        await setReps(
+            exercise.ref,
+            reps);
+        exercise.reps = reps;
+        card.querySelector(".latest-sets").textContent =
+            `Last: ${exercise.sets}x${reps}`;
+
+
+        inputR.value = "";
     };
 
     const button = card.querySelector("button");

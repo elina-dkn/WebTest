@@ -23,6 +23,7 @@ export async function getExercises() {
 
     return snap.docs.map(d => ({
             id: d.id,
+            ref: d.ref,
             ...d.data()
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -79,13 +80,13 @@ export async function createExercise(name, weight, sets, reps, splitId) {
     }
 }
 
-async function setReps(exerciseRef, reps){
+export async function setReps(exerciseRef, reps){
     await updateDoc(exerciseRef, {
         reps: reps
     });
 }
 
-async function setSets(exerciseRef, sets){
+export async function setSets(exerciseRef, sets){
     await updateDoc(exerciseRef, {
         sets: sets
     });
