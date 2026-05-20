@@ -8,11 +8,11 @@ import {
 
 export function createExerciseCard({
                                        exercise,
-                                       onDelete
+                                       onDelete,
+                                        deleteText
                                    }) {
 
     const card = document.createElement("div");
-
     card.className = "card";
 
     card.innerHTML = `
@@ -33,7 +33,7 @@ export function createExerciseCard({
         <input class="reps-input" type="number" placeholder="Reps">
 
         <button class="delete-btn">
-            Delete
+            ${deleteText}
         </button>
     </div>
     `;

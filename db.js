@@ -39,7 +39,7 @@ export async function getSplits() {
     }));
 }
 
-export async function createExercise(name, weight, sets, reps, splitId) {
+export async function createExercise(name, weight, sets, reps, splitsArray) {
 
     const exerciseRef = await addDoc(
         collection(db, ...userPath("exercises")),
@@ -74,9 +74,12 @@ export async function createExercise(name, weight, sets, reps, splitId) {
         await setSets(exerciseRef, sets);
     }
 
-    if (splitId) {
-
-        await setExerciseSplit(exerciseRef.id, splitId);
+    if (splitsArray.length > 0) {
+        await Promise.all(
+            splitsArray.map(split =>
+                setExerciseSplit(exerciseRef.id, split)
+            )
+        );
     }
 }
 
@@ -187,10 +190,7 @@ export async function getSplitExercises(splitId) {
                     item.exerciseId
                 )
             );
-            console.log("exRef:", exRef);
             const exSnap = await getDoc(exRef);
-            console.log("exSnap:", exSnap);
-            console.log("exSnap data:", exSnap.data());
             if (!exSnap.exists()) {
 
                 await deleteDoc(
@@ -217,7 +217,7 @@ export async function getSplitExercises(splitId) {
         })
     );
 
-    return exercises.filter(e => e !== null);
+    return exercises.filter(e => e !== null).sort((a, b) => a.name.localeCompare(b.name));;
 }
 
 

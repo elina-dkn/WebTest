@@ -99,8 +99,9 @@ input:-webkit-autofill {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: #e99b9b;
   padding: 30px;
+  margin-top: 10px;
   margin-bottom: 10px;
   border-radius: 12px;
 }
@@ -124,10 +125,6 @@ input:-webkit-autofill {
   justify-content: space-between;
 }
 
-.weight-input {
-  width: 100px;
-  padding: 10px;
-}
 
 .delete-btn {
   background: red;
@@ -220,9 +217,12 @@ canvas {
   gap: 10px;
 }
 
-.addinput{
-  display: flex;
-  gap: 10px;
+.addinput,
+.weight-input,
+.sets-input,
+.reps-input{
+  width: 100%;
+  max-width: 400px;
   margin-bottom: 15px;
   background: #e99b9b;
   font-size: 22px;
@@ -238,4 +238,21 @@ canvas {
 ::placeholder {
   color: #302939;
   opacity: 1;
+}
+
+.pill {
+  display: inline-block;
+  padding: 8px 12px;
+  margin: 4px;
+  border-radius: 50px;
+  border: 3px solid #50595c;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s;
+}
+
+.pill.selected {
+  background: #50595c;
+  color: #ffb6b9;
+  border-color: #50595c;
 }

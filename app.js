@@ -41,6 +41,9 @@ onAuthStateChanged(auth, async (user) => {
   else if (currentPage === "index.html") {
     await renderSplits();
   }
+  else if (currentPage === "addExercise.html") {
+    await renderSplitCheckboxes();
+  }
 });
 
 window.logout = async () => {
@@ -58,7 +61,6 @@ async function renderExercises() {
   list.innerHTML = "";
 
   const exercises = await getExercises();
-
   for (const exercise of exercises) {
 
     const card = createExerciseCard({
@@ -67,7 +69,8 @@ async function renderExercises() {
 
       onDelete: async () => {
         await deleteExercise(exercise.id);
-      }
+      },
+      deleteText: "Delete"
     });
 
     list.appendChild(card);
@@ -117,7 +120,6 @@ async function openSplit(split) {
 
   const exercises =
       await getSplitExercises(split.id);
-
   for (const exercise of exercises) {
 
     const card = createExerciseCard({
@@ -130,7 +132,8 @@ async function openSplit(split) {
             split.id,
             exercise.itemId
         );
-      }
+      },
+      deleteText: "Remove from split"
     });
 
     dialog.appendChild(card);
@@ -163,8 +166,11 @@ window.addExercise = async () => {
   const repsInput =
       document.getElementById("newExerciseReps");
 
-  const splitSelect =
-      document.getElementById("selectSplit");
+  const container = document.getElementById("splitArea");
+
+  const selectedSplits = Array.from(
+      container.querySelectorAll(".pill.selected")
+  ).map(pill => pill.dataset.id);
 
   const name = nameInput.value.trim();
 
@@ -181,13 +187,15 @@ window.addExercise = async () => {
       weight,
       sets,
       reps,
-      splitSelect.value
+      selectedSplits
   );
 
   nameInput.value = "";
   weightInput.value = "";
   setsInput.value = "";
   repsInput.value = "";
+  container.querySelectorAll(".pill")
+      .forEach(pill => pill.classList.remove("selected"));
 
   await renderExercises();
 };
@@ -206,4 +214,24 @@ window.addSplit = async () => {
   input.value = "";
 
   await renderSplits();
+};
+
+async function renderSplitCheckboxes() {
+  const splits = await getSplits();
+
+  const container = document.getElementById("splitArea");
+  container.innerHTML = "";
+
+  splits.forEach(split => {
+    const pill = document.createElement("div");
+    pill.className = "pill";
+    pill.textContent = split.name;
+    pill.dataset.id = split.id;
+
+    pill.onclick = () => {
+      pill.classList.toggle("selected");
+    };
+
+    container.appendChild(pill);
+  });
 };
