@@ -197,9 +197,11 @@ export function createExerciseDialog(exercise, renderExercises) {
 }
 
 async function commitWeight(exercise, value) {
-    const weight = Number(value);
+    const raw = value.trim();
+    if (raw === "") return;
 
-    if (Number.isNaN(weight)) return;
+    const weight = Number(raw);
+    if (!Number.isFinite(weight)) return;
 
     await addWeight(
         exercise.id || exercise.exerciseId,
@@ -210,9 +212,11 @@ async function commitWeight(exercise, value) {
 }
 
 async function commitSets(exercise, value) {
-    const sets = Number(value);
+    const raw = value.trim();
+    if (raw === "") return;
 
-    if (Number.isNaN(sets)) return;
+    const sets = Number(raw);
+    if (!Number.isFinite(sets)) return;
 
     await setSets(
         exercise.ref,
@@ -221,9 +225,11 @@ async function commitSets(exercise, value) {
 }
 
 async function commitReps(exercise, value) {
-    const reps = Number(value);
+    const raw = value.trim();
+    if (raw === "") return;
 
-    if (Number.isNaN(reps)) return;
+    const reps = Number(raw);
+    if (!Number.isFinite(reps)) return;
 
     await setReps(
         exercise.ref,
