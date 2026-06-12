@@ -105,8 +105,11 @@ input:-webkit-autofill {
   margin-bottom: 10px;
   border-radius: 12px;
 }
-.latest-weight{
+.latest-weight,
+.latest-sets{
   padding: 0px;
+  
+  font-weight: bold;
 }
 .exercise-name {
   width: 100%;
