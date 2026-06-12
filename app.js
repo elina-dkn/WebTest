@@ -19,8 +19,9 @@ import {
 } from "./db.js";
 
 import {
-  createExerciseCard,
-  createSplitCard
+  createExerciseCard, createExerciseDialog,
+  createSplitCard,
+  createSplitDialog
 } from "./ui.js";
 
 
@@ -66,6 +67,7 @@ async function renderExercises() {
     const card = createExerciseCard({
 
       exercise,
+      onOpen: async () => await createExerciseDialog(exercise, renderExercises),
 
       onDelete: async () => {
         await deleteExercise(exercise.id);
@@ -102,54 +104,10 @@ async function renderSplits() {
   }
 }
 async function openSplit(split) {
-
-  const dialogContainer =
-      document.getElementById("splitDialog");
-
-  dialogContainer.innerHTML = "";
-
-  const dialog = document.createElement("dialog");
-
-  dialog.className = "dialog";
-
-  dialog.innerHTML = `
-    <h3>${split.name}</h3>
-  `;
-
-  dialogContainer.appendChild(dialog);
-
   const exercises =
       await getSplitExercises(split.id);
-  for (const exercise of exercises) {
 
-    const card = createExerciseCard({
-
-      exercise,
-
-      onDelete: async () => {
-
-        await removeExerciseFromSplit(
-            split.id,
-            exercise.itemId
-        );
-      },
-      deleteText: "Remove from split"
-    });
-
-    dialog.appendChild(card);
-  }
-
-  const closeButton = document.createElement("button");
-
-  closeButton.className = "button";
-
-  closeButton.textContent = "Close";
-
-  closeButton.onclick = () => dialog.close();
-
-  dialog.appendChild(closeButton);
-
-  dialog.showModal();
+  createSplitDialog(split, exercises, createExerciseDialog);
 }
 
 window.addExercise = async () => {
@@ -234,4 +192,4 @@ async function renderSplitCheckboxes() {
 
     container.appendChild(pill);
   });
-};
+}
