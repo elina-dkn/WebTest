@@ -3,7 +3,7 @@ import {
     setSets,
     setReps,
     deleteExercise,
-    removeExerciseFromSplit
+    removeExerciseFromSplit, getSplits
 } from "./db.js";
 
 export function createExerciseCard({
@@ -133,7 +133,7 @@ export function createSplitDialog(split, exercises, onOpen ) {
     dialog.showModal();
 }
 
-export function createExerciseDialog(exercise, renderExercises) {
+export async function createExerciseDialog(exercise, renderExercises) {
     const dialogContainer =
         document.getElementById("exDialog");
 
@@ -150,7 +150,23 @@ export function createExerciseDialog(exercise, renderExercises) {
         <input class="reps-input" type="number" placeholder="Reps">
   `;
 
+    const splits = await getSplits();
+
+    splits.forEach(split => {
+        const pill = document.createElement("div");
+        pill.className = "pill";
+        pill.textContent = split.name;
+        pill.dataset.id = split.id;
+
+        pill.onclick = () => {
+            pill.classList.toggle("selected");
+        };
+        dialogContainer.appendChild(pill);
+
+    });
+
     dialogContainer.appendChild(dialog);
+
 
     const input = dialog.querySelector(".weight-input");
 
