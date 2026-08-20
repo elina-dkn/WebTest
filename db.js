@@ -334,19 +334,40 @@ export async function migrateLatestWeights() {
 }
 
 export async function migrateExerciseSplits() {
+    console.log("migration inside");
 
+    const exercises = await getExercises();
     const splits = await getSplits();
 
-    const splitExercises = await Promise.all(
-        splits.map(async (split) => ({
-            split,
-            exercises: await getSplitExercises(split.id)
-        }))
-    );
-    for (const { split, exercises } of splitExercises) {
-        for (const exercise of exercises) {
-            await setExerciseSplit(exercise.exerciseId, split.id);
+    // Make sure every exercise has a splits field
+    for (const exercise of exercises) {
+        const exerciseRef = doc(
+            db,
+            ...userPath("exercises", exercise.id)
+        );
+
+        if (exercise.splits === undefined) {
+            await updateDoc(exerciseRef, {
+                splits: []
+            });
         }
     }
 
+    // Add the appropriate split IDs
+    for (const split of splits) {
+        const splitExercises = await getSplitExercises(split.id);
+
+        for (const exercise of splitExercises) {
+            const exerciseRef = doc(
+                db,
+                ...userPath("exercises", exercise.exerciseId)
+            );
+
+            await updateDoc(exerciseRef, {
+                splits: arrayUnion(split.id)
+            });
+        }
+    }
+
+    console.log("migration complete");
 }

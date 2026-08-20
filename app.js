@@ -1,3 +1,4 @@
+console.log("JS FILE LOADED");
 import { auth } from "./firebase.js";
 import { state } from "./state.js";
 
@@ -27,8 +28,9 @@ import {
 
 const currentPage =
     location.pathname.split("/").pop();
-
+console.log("before auth listener");
 onAuthStateChanged(auth, async (user) => {
+  console.log("AUTH CALLBACK FIRED", user);
 
   if (!user) {
     location.href = "auth.html";
@@ -37,6 +39,7 @@ onAuthStateChanged(auth, async (user) => {
   state.user = user;
   await migrateLatestWeights();
   await migrateExerciseSplits();
+  console.log("migration");
   if (currentPage === "exerciseList.html") {
     await renderExercises();
   }
