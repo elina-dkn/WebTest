@@ -3,7 +3,8 @@ import {
     setSets,
     setReps,
     deleteExercise,
-    removeExerciseFromSplit, getSplits
+    removeExerciseFromSplit, getSplits,
+    setExerciseSplit, removeExerciseSplit
 } from "./db.js";
 
 export function createExerciseCard({
@@ -110,7 +111,8 @@ export function createSplitDialog(split, exercises, onOpen ) {
 
                 await removeExerciseFromSplit(
                     split.id,
-                    exercise.itemId
+                    exercise.itemId,
+                    exercise.exerciseId
                 );
             },
 
@@ -152,20 +154,46 @@ export async function createExerciseDialog(exercise, renderExercises) {
 
     const splits = await getSplits();
 
+    const container = document.createElement("div");
+    container.innerHTML = "";
+    container.id = "splitArea";
+
+    let selectedSplits = Array;
+
     splits.forEach(split => {
         const pill = document.createElement("div");
         pill.className = "pill";
         pill.textContent = split.name;
         pill.dataset.id = split.id;
 
+        exercise.splits.forEach(exSplit => {
+
+            if(split.id === exSplit) {
+                pill.classList.toggle("selected");
+            }
+        })
+
         pill.onclick = () => {
             pill.classList.toggle("selected");
+            selectedSplits = Array.from(
+                cont.querySelectorAll(".pill.selected")
+            ).map(pill => pill.dataset.id);
         };
-        dialog.appendChild(pill);
+        container.appendChild(pill);
 
     });
-
+    dialog.appendChild(container);
     dialogContainer.appendChild(dialog);
+
+    const cont = document.getElementById("splitArea");
+
+    selectedSplits = Array.from(
+        cont.querySelectorAll(".pill.selected")
+    ).map(pill => pill.dataset.id);
+
+
+
+
 
 
     const input = dialog.querySelector(".weight-input");
@@ -199,10 +227,17 @@ export async function createExerciseDialog(exercise, renderExercises) {
         await commitWeight(exercise, input.value);
         await commitReps(exercise, inputR.value);
         await commitSets(exercise, inputS.value);
+        const deselectedSplits = exercise.splits.filter(
+            splitId => !selectedSplits.includes(splitId)
+        );
+        await commitSplits(exercise, selectedSplits, deselectedSplits);
 
         input.value = "";
         inputS.value = "";
         inputR.value = "";
+        cont.querySelectorAll(".pill")
+            .forEach(pill => pill.classList.remove("selected"));
+
         dialog.close();
         await renderExercises();
     };
@@ -251,4 +286,16 @@ async function commitReps(exercise, value) {
         exercise.ref,
         reps);
     exercise.reps = reps;
+}
+
+async function commitSplits(exercise, value1, value2) {
+    console.log(value1, value2);
+    for (const value of value1) {
+        await setExerciseSplit(exercise.id, value);
+    }
+    for (const value of value2) {
+        await removeExerciseSplit(exercise.id, value);
+    }
+
+
 }

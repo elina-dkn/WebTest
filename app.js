@@ -15,7 +15,7 @@ import {
   deleteExercise,
   deleteSplit,
   removeExerciseFromSplit,
-  migrateLatestWeights
+  migrateLatestWeights, migrateExerciseSplits
 } from "./db.js";
 
 import {
@@ -36,6 +36,7 @@ onAuthStateChanged(auth, async (user) => {
   }
   state.user = user;
   await migrateLatestWeights();
+  await migrateExerciseSplits();
   if (currentPage === "exerciseList.html") {
     await renderExercises();
   }

@@ -8,7 +8,10 @@ import {
     getDoc,
     updateDoc,
     deleteDoc,
-    doc
+    doc,
+    arrayUnion,
+    query,
+    where, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 function userPath(...segments) {
@@ -47,7 +50,8 @@ export async function createExercise(name, weight, sets, reps, splitsArray) {
             name,
             latestWeight: weight || null,
             sets: 0 || null,
-            reps: 0 || null
+            reps: 0 || null,
+            splits: [] || null
         }
     );
     if (weight !== "") {
@@ -95,20 +99,64 @@ export async function setSets(exerciseRef, sets){
     });
 }
 
-async function setExerciseSplit(exerciseId, splitId){
-    await addDoc(
-        collection(
-            db,
-            ...userPath(
-                "splits",
-                splitId,
-                "items"
-            )
-        ),
-        {
-            exerciseId: exerciseId
-        }
+export async function setExerciseSplit(exerciseId, splitId){
+    const itemsRef = collection(
+        db,
+        ...userPath("splits", splitId, "items")
     );
+
+    const q = query(
+        itemsRef,
+        where("exerciseId", "==", exerciseId)
+    );
+
+    const existing = await getDocs(q);
+
+    if (!existing.empty) {
+        return; // Already belongs to this split
+    }
+
+    await addDoc(itemsRef, {
+        exerciseId: exerciseId
+    });
+
+    const exerciseRef = doc(
+        db,
+        ...userPath("exercises", exerciseId)
+    );
+
+    await updateDoc(exerciseRef, {
+        splits: arrayUnion(splitId)
+    });
+}
+
+export async function removeExerciseSplit(exerciseId, splitId){
+    const itemsRef = collection(
+        db,
+        ...userPath("splits", splitId, "items")
+    );
+
+    const q = query(
+        itemsRef,
+        where("exerciseId", "==", exerciseId)
+    );
+
+    const existing = await getDocs(q);
+
+    // Remove exercise from the split's items
+    for (const item of existing.docs) {
+        await deleteDoc(item.ref);
+    }
+
+    // Remove split from the exercise's splits array
+    const exerciseRef = doc(
+        db,
+        ...userPath("exercises", exerciseId)
+    );
+
+    await updateDoc(exerciseRef, {
+        splits: arrayRemove(splitId)
+    });
 }
 
 export async function addWeight(exerciseId, weight) {
@@ -221,7 +269,7 @@ export async function getSplitExercises(splitId) {
 }
 
 
-export async function removeExerciseFromSplit(splitId, itemId) {
+export async function removeExerciseFromSplit(splitId, itemId, exerciseId) {
 
     await deleteDoc(
         doc(
@@ -234,6 +282,8 @@ export async function removeExerciseFromSplit(splitId, itemId) {
             )
         )
     );
+
+    await removeExerciseSplit(exerciseId, splitId);
 }
 
 export async function migrateLatestWeights() {
@@ -281,4 +331,22 @@ export async function migrateLatestWeights() {
             }
         );
     }
+}
+
+export async function migrateExerciseSplits() {
+
+    const splits = await getSplits();
+
+    const splitExercises = await Promise.all(
+        splits.map(async (split) => ({
+            split,
+            exercises: await getSplitExercises(split.id)
+        }))
+    );
+    for (const { split, exercises } of splitExercises) {
+        for (const exercise of exercises) {
+            await setExerciseSplit(exercise.exerciseId, split.id);
+        }
+    }
+
 }
