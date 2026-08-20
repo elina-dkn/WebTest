@@ -161,7 +161,7 @@ export async function createExerciseDialog(exercise, renderExercises) {
         pill.onclick = () => {
             pill.classList.toggle("selected");
         };
-        dialogContainer.appendChild(pill);
+        dialog.appendChild(pill);
 
     });
 
