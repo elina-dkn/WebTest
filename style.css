@@ -218,14 +218,13 @@ input:-webkit-autofill {
   border: 3px solid var(--border);
   border-radius: 50px;
   background: transparent;
-  color: var(--text);
+  color: var(--surface-light);
   cursor: pointer;
   user-select: none;
 }
 
 .pill.selected {
   background: var(--border);
-  color: var(--surface-light);
 }
 
 .status-message {
