@@ -1,33 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Workout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#302939">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
+  <title>Workout Froggy</title>
 </head>
 <body>
-
-<div class="content">
-  <h3>Workout Split</h3>
-  <div class="addNewExercise">
-    <a href="addSplit.html" class="button">Add split</a>
-  </div>
-
-  <div id="list"></div>
-
+<main class="content">
+  <h1>Workout Split</h1>
+  <div id="globalError" class="error-message" role="alert" hidden></div>
+  <div class="page-actions"><a href="addSplit.html" class="button">Add split</a></div>
+  <div id="list" aria-live="polite"></div>
   <div id="splitDialog"></div>
   <div id="exDialog"></div>
+</main>
 
-</div>
-
-<footer class="navbar">
+<footer class="navbar" aria-label="Main navigation">
   <a href="index.html" class="active">Home</a>
   <a href="exerciseList.html">My Exercises</a>
   <a href="progress.html">Progress</a>
   <a href="user.html">Profile</a>
 </footer>
 
-<script type="module" src="app.js"></script>
-
+<script type="module" src="js/pages/splitsPage.js"></script>
 </body>
 </html>

@@ -1,31 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Workout</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#302939">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>My Exercises</title>
 </head>
 <body>
-<div class="content">
-    <h3>My Exercises</h3>
+<main class="content">
+  <h1>My Exercises</h1>
+  <div id="globalError" class="error-message" role="alert" hidden></div>
+  <div class="page-actions"><a href="addExercise.html" class="button">Add exercise</a></div>
+  <div id="list" aria-live="polite"></div>
+  <div id="exDialog"></div>
+</main>
 
-    <div class="addNewExercise">
-        <a href="addExercise.html" class="button">Add exercise</a>
-    </div>
-
-    <div id="list"></div>
-    <div id="exDialog"></div>
-</div>
-</div>
-
-<footer class="navbar">
-    <a href="index.html">Home</a>
-    <a href="exerciseList.html" class="active">My Exercises</a>
-    <a href="progress.html">Progress</a>
-    <a href="user.html">Profile</a>
+<footer class="navbar" aria-label="Main navigation">
+  <a href="index.html">Home</a>
+  <a href="exerciseList.html" class="active">My Exercises</a>
+  <a href="progress.html">Progress</a>
+  <a href="user.html">Profile</a>
 </footer>
 
-<script type="module" src="app.js"></script>
-
+<script type="module" src="js/pages/exercisesPage.js"></script>
 </body>
 </html>

@@ -1,26 +1,79 @@
-const CACHE_NAME = "gym-tracker-v4";
+const CACHE_NAME = "workout-froggy-v5";
 
-const urlsToCache = [
+const APP_SHELL = [
+  "./",
   "auth.html",
+  "index.html",
+  "exerciseList.html",
+  "addExercise.html",
+  "addSplit.html",
   "progress.html",
+  "user.html",
   "style.css",
-  "progress.js",
-    "app.js",
-    "index.html",
-    "auth.js",
-    "firebase.js"
+  "manifest.json",
+  "js/core/firebase.js",
+  "js/core/auth.js",
+  "js/data/helpers.js",
+  "js/data/exerciseRepository.js",
+  "js/data/splitRepository.js",
+  "js/data/logRepository.js",
+  "js/services/exerciseService.js",
+  "js/services/splitService.js",
+  "js/services/migrationService.js",
+  "js/components/dom.js",
+  "js/components/navigation.js",
+  "js/components/exerciseCard.js",
+  "js/components/splitCard.js",
+  "js/components/splitPills.js",
+  "js/components/exerciseDialog.js",
+  "js/components/splitDialog.js",
+  "js/pages/common.js",
+  "js/pages/exercisesPage.js",
+  "js/pages/splitsPage.js",
+  "js/pages/addExercisePage.js",
+  "js/pages/addSplitPage.js",
+  "js/pages/profilePage.js",
+  "js/pages/progressPage.js",
+  "js/pages/authPage.js",
+  "js/pages/registerServiceWorker.js",
+  "icons/gym.png",
+  "icons/gym-icon.png"
 ];
 
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener("fetch", event => {
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(
+      keys
+        .filter((key) => key !== CACHE_NAME)
+        .map((key) => caches.delete(key))
+    )).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200 || response.type === "opaque") {
+          return response;
+        }
+
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      });
     })
   );
 });

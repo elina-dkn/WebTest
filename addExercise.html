@@ -1,40 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Workout</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#302939">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Add Exercise</title>
 </head>
 <body>
-<div class="content">
-    <h3>Add Exercise</h3>
+<main class="content">
+  <h1>Add Exercise</h1>
+  <div id="globalError" class="error-message" role="alert" hidden></div>
 
-    <div class="addbar">
-        <div class="inputfield">
-            <input class="addinput" id="newExercise" placeholder="exercise name" type="text">
-            <input class="addinput" id="newExerciseWeight" placeholder="weight" type="number">
-            <input class="addinput" id="newExerciseSets" placeholder="sets" type="number">
-            <input class="addinput" id="newExerciseReps" placeholder="reps" type="number">
-            <div>Select splits</div>
-            <div id="splitArea"></div>
+  <form id="exerciseForm" class="form-panel">
+    <label class="field">
+      <span>Exercise name</span>
+      <input class="addinput" id="newExercise" placeholder="Exercise name" type="text" required maxlength="100">
+    </label>
+    <label class="field">
+      <span>Weight</span>
+      <input class="addinput" id="newExerciseWeight" placeholder="Weight (optional)" type="number" min="0" step="any">
+    </label>
+    <label class="field">
+      <span>Sets</span>
+      <input class="addinput" id="newExerciseSets" placeholder="Sets (optional)" type="number" min="0" step="1">
+    </label>
+    <label class="field">
+      <span>Reps</span>
+      <input class="addinput" id="newExerciseReps" placeholder="Reps (optional)" type="number" min="0" step="1">
+    </label>
 
-
-        </div>
-
-        <button onclick="addExercise()" class="button">Add</button>
+    <div class="field">
+      <span>Select splits</span>
+      <div id="splitArea" class="split-area" aria-label="Workout splits"></div>
     </div>
-</div>
 
-<footer class="navbar">
-    <a href="index.html">Home</a>
-    <a href="exerciseList.html" class="active">My Exercises</a>
-    <a href="progress.html">Progress</a>
-    <a href="user.html">Profile</a>
+    <div class="form-actions">
+      <button id="addExerciseButton" type="submit" class="button">Add</button>
+      <a href="exerciseList.html" class="button secondary-button">Cancel</a>
+    </div>
+  </form>
+</main>
+
+<footer class="navbar" aria-label="Main navigation">
+  <a href="index.html">Home</a>
+  <a href="exerciseList.html" class="active">My Exercises</a>
+  <a href="progress.html">Progress</a>
+  <a href="user.html">Profile</a>
 </footer>
 
-
-
-<script type="module" src="app.js"></script>
-
+<script type="module" src="js/pages/addExercisePage.js"></script>
 </body>
 </html>

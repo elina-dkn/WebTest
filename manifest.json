@@ -1,10 +1,10 @@
 {
-  "name": "Gym Tracker",
+  "name": "Workout Froggy",
   "short_name": "Gym",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4a90e2",
+  "background_color": "#302939",
+  "theme_color": "#302939",
   "icons": [
     {
       "src": "icons/gym.png",

@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Workout</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#302939">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Profile</title>
 </head>
 <body>
-<div class="content">
-    <h3>Profile</h3>
+<main class="content">
+  <h1>Profile</h1>
+  <div id="globalError" class="error-message" role="alert" hidden></div>
+  <section class="form-panel profile-panel">
+    <p class="profile-label">Signed in as</p>
+    <p id="profileEmail" class="profile-email"></p>
+    <button id="logoutButton" type="button" class="button">Logout</button>
+  </section>
+</main>
 
-    <button class="button" onclick="logout()">Logout</button>
-
-</div>
-
-
-<footer class="navbar">
-    <a href="index.html">Home</a>
-    <a href="exerciseList.html">My Exercises</a>
-    <a href="progress.html">Progress</a>
-    <a href="user.html" class="active">Profile</a>
+<footer class="navbar" aria-label="Main navigation">
+  <a href="index.html">Home</a>
+  <a href="exerciseList.html">My Exercises</a>
+  <a href="progress.html">Progress</a>
+  <a href="user.html" class="active">Profile</a>
 </footer>
 
-<script type="module" src="app.js"></script>
-
+<script type="module" src="js/pages/profilePage.js"></script>
 </body>
 </html>

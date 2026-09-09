@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Progress</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#302939">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Progress</title>
 </head>
 <body>
-<div class="content">
-  <h3>Progress</h3>
+<main class="content">
+  <h1>Progress</h1>
+  <div id="globalError" class="error-message" role="alert" hidden></div>
+  <section class="form-panel">
+    <label class="field">
+      <span>Exercise</span>
+      <select id="select"></select>
+    </label>
+  </section>
+  <p id="progressEmpty" class="status-message" hidden></p>
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+</main>
 
-  <select id="select"></select>
-  <canvas id="chart"></canvas>
-
-</div>
-
-<footer class="navbar">
+<footer class="navbar" aria-label="Main navigation">
   <a href="index.html">Home</a>
   <a href="exerciseList.html">My Exercises</a>
   <a href="progress.html" class="active">Progress</a>
   <a href="user.html">Profile</a>
 </footer>
 
-<script type="module" src="progress.js"></script>
-
+<script type="module" src="js/pages/progressPage.js"></script>
 </body>
 </html>
