@@ -289,12 +289,15 @@ async function commitReps(exercise, value) {
 }
 
 async function commitSplits(exercise, value1, value2) {
-    console.log(value1, value2);
+    console.log("exercise:", exercise);
+    console.log("exercise.id:", exercise.id);
+    console.log("selectedSplits:", value1);
+    console.log("deselectedSplits:", value2);
     for (const value of value1) {
-        await setExerciseSplit(exercise.id, value);
+        await setExerciseSplit(exercise.exerciseId, value);
     }
     for (const value of value2) {
-        await removeExerciseSplit(exercise.id, value);
+        await removeExerciseSplit(exercise.exerciseId, value);
     }
 
 
