@@ -1,4 +1,4 @@
-const CACHE_NAME = "workout-froggy-v5";
+const CACHE_NAME = "workout-froggy-v6";
 
 const APP_SHELL = [
   "./",
