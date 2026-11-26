@@ -6,51 +6,72 @@
   <meta name="theme-color" content="#302939">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <title>Progress</title>
+  <title>Progress | Workout Froggy</title>
 </head>
 <body>
-<main class="content">
+<main class="content progress-page">
   <h1>Progress</h1>
-
   <div id="globalError" class="error-message" role="alert" hidden></div>
 
-  <section class="form-panel calendar-panel">
-    <h2>Workout Calendar</h2>
-
-    <div class="calendar-header">
-      <button id="prevMonth" class="calendar-nav" type="button" aria-label="Previous month">‹</button>
-      <h3 id="calendarMonth"></h3>
-      <button id="nextMonth" class="calendar-nav" type="button" aria-label="Next month">›</button>
-    </div>
-
-    <div class="calendar-weekdays" aria-hidden="true">
-      <span>Mon</span><span>Tue</span><span>Wed</span>
-      <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-    </div>
-
-    <div id="workoutCalendar" class="calendar-grid"></div>
-    <div id="calendarLegend" class="calendar-legend"></div>
-
-    <section class="selected-day">
-      <h3 id="selectedDate"></h3>
-      <div id="selectedWorkout"></div>
-    </section>
+  <section class="workout-count-card">
+    <span id="countLabel">WORKOUTS THIS MONTH</span>
+    <strong id="workoutCount">0</strong>
   </section>
 
-  <section class="progress-section">
-    <h2>Exercise Progress</h2>
+  <section class="calendar-panel">
+    <div class="calendar-title-row">
+      <h2>Workout calendar</h2>
+      <div class="calendar-toggle" role="group" aria-label="Calendar view">
+        <button id="monthViewButton" class="active" type="button">Month</button>
+        <button id="yearViewButton" type="button">Year</button>
+      </div>
+    </div>
 
-    <section class="form-panel">
-      <label class="field">
-        <span>Exercise</span>
-        <select id="select"></select>
-      </label>
-    </section>
+    <div id="monthCalendar">
+      <div class="calendar-header">
+        <button id="previousMonth" class="calendar-nav" type="button" aria-label="Previous month">‹</button>
+        <h3 id="monthTitle"></h3>
+        <button id="nextMonth" class="calendar-nav" type="button" aria-label="Next month">›</button>
+      </div>
+      <div class="calendar-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+        <span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+      <div id="calendarLegend" class="calendar-legend"></div>
 
-    <p id="progressEmpty" class="status-message" hidden></p>
+      <div id="selectedDay" class="selected-day">
+        <h3 id="selectedDayTitle">Select a day</h3>
+        <div id="selectedWorkout"></div>
+      </div>
+    </div>
 
-    <div class="chart-container">
+    <div id="yearCalendar" hidden>
+      <h3 id="yearTitle" class="year-title"></h3>
+      <div id="yearGrid" class="year-grid"></div>
+    </div>
+
+    <div class="recent-workouts">
+      <div class="recent-workouts-heading">
+        <h3>Recent workouts</h3>
+      </div>
+      <div id="recentWorkouts"></div>
+    </div>
+  </section>
+
+  <section class="progress-section weight-section">
+    <div class="section-heading">
+      <h2>Weight progression</h2>
+      <span aria-hidden="true">↗</span>
+    </div>
+
+    <label for="exerciseSelect">Choose an exercise</label>
+    <select id="exerciseSelect">
+      <option value="">Select an exercise</option>
+    </select>
+
+    <div id="progressEmpty" class="status-message" hidden></div>
+    <div class="weight-chart-wrap">
       <canvas id="chart"></canvas>
     </div>
   </section>
@@ -63,6 +84,7 @@
   <a href="user.html">Profile</a>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="js/pages/progressPage.js"></script>
 </body>
 </html>

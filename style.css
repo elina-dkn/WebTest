@@ -604,4 +604,378 @@ canvas {
     font-size: 0.9rem;
   }
 }
+/* Progress dashboard */
+.progress-page {
+  padding-bottom: calc(var(--nav-height) + 24px);
+}
 
+.progress-page > h1 {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.workout-count-card {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 18px;
+  margin-bottom: 22px;
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.workout-count-card span {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.workout-count-card strong {
+  font-size: 3.2rem;
+  line-height: 1.1;
+}
+
+.calendar-panel,
+.progress-section {
+  padding: 18px;
+  margin-bottom: 22px;
+  border: 3px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.calendar-title-row,
+.section-heading,
+.recent-workouts-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-title-row h2,
+.section-heading h2 {
+  margin: 0;
+  text-align: left;
+}
+
+.calendar-toggle {
+  display: flex;
+  padding: 4px;
+  border-radius: 30px;
+  background: var(--background);
+}
+
+.calendar-toggle button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  color: var(--text-light);
+  font: inherit;
+  cursor: pointer;
+}
+
+.calendar-toggle button.active {
+  background: var(--surface-light);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 20px 0 14px;
+}
+
+.calendar-header h3,
+.year-title {
+  margin: 0;
+  text-align: center;
+}
+
+.calendar-nav {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--text-light);
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  text-align: center;
+}
+
+.calendar-weekdays {
+  margin-bottom: 8px;
+  color: #9f78a5;
+  font-weight: 800;
+}
+
+.calendar-day,
+.calendar-blank {
+  min-width: 0;
+  min-height: 43px;
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 1px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--text-light);
+  font: inherit;
+  cursor: pointer;
+}
+
+.calendar-day.has-workout {
+  font-weight: 800;
+}
+
+.calendar-day.selected {
+  border-color: var(--border);
+  background: var(--surface-light);
+  color: var(--text);
+}
+
+.calendar-day.today {
+  outline: 2px solid var(--surface-light);
+  outline-offset: 2px;
+}
+
+.calendar-dots {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  min-height: 6px;
+  margin-top: 2px;
+}
+
+.calendar-dot,
+.legend-swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 16px;
+  margin-top: 14px;
+}
+
+.legend-item,
+.workout-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-day {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 2px solid var(--border);
+}
+
+.selected-day h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+#selectedWorkout {
+  display: grid;
+  gap: 8px;
+}
+
+.workout-session {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--background);
+  color: var(--text-light);
+}
+
+.recent-workouts {
+  margin-top: 22px;
+}
+
+.recent-workouts-heading h3 {
+  margin: 0 0 12px;
+}
+
+#recentWorkouts {
+  display: grid;
+  gap: 9px;
+}
+
+.recent-workout {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 13px 12px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: var(--background);
+  color: var(--text-light);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.recent-workout-stripe {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+}
+
+.recent-workout > .legend-swatch {
+  margin-left: 7px;
+  width: 12px;
+  height: 12px;
+}
+
+.recent-workout-details {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.recent-workout-arrow {
+  font-size: 1.6rem;
+}
+
+.year-title {
+  margin: 18px 0 14px;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mini-month {
+  min-width: 0;
+  padding: 9px 5px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.mini-month-title {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.85rem;
+}
+
+.mini-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.mini-day {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-size: 0.55rem;
+}
+
+.mini-day.has-workout {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.mini-day.empty {
+  visibility: hidden;
+}
+
+.section-heading {
+  margin-bottom: 16px;
+}
+
+.section-heading > span {
+  color: #9f78a5;
+  font-size: 1.6rem;
+}
+
+.weight-section {
+  display: grid;
+  gap: 12px;
+}
+
+.weight-section label {
+  font-weight: 700;
+}
+
+.weight-section select {
+  width: 100%;
+}
+
+.weight-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+#progressEmpty {
+  margin: 0;
+}
+
+@media (max-width: 380px) {
+  .calendar-panel {
+    padding: 12px;
+  }
+
+  .calendar-weekdays,
+  .calendar-grid {
+    gap: 2px;
+  }
+
+  .calendar-day,
+  .calendar-blank {
+    min-height: 38px;
+  }
+
+  .year-grid {
+    gap: 6px;
+  }
+
+  .mini-month {
+    padding: 7px 3px;
+  }
+
+  .mini-day {
+    font-size: 0.48rem;
+  }
+}

@@ -1,248 +1,307 @@
-
 import { getExercises, getWeightLogs } from "../services/exerciseService.js";
+import { getSplits } from "../services/splitService.js";
 import { getWorkoutSessions } from "../services/workoutSessionService.js";
 import { initPage, runSafely } from "./common.js";
 
-const select = document.getElementById("select");
-const chartCanvas = document.getElementById("chart");
-const calendar = document.getElementById("workoutCalendar");
-const calendarMonth = document.getElementById("calendarMonth");
+const countLabel = document.getElementById("countLabel");
+const workoutCount = document.getElementById("workoutCount");
+const monthViewButton = document.getElementById("monthViewButton");
+const yearViewButton = document.getElementById("yearViewButton");
+const monthCalendar = document.getElementById("monthCalendar");
+const yearCalendar = document.getElementById("yearCalendar");
+const monthTitle = document.getElementById("monthTitle");
+const calendarGrid = document.getElementById("calendarGrid");
 const calendarLegend = document.getElementById("calendarLegend");
-const selectedDateElement = document.getElementById("selectedDate");
+const selectedDayTitle = document.getElementById("selectedDayTitle");
 const selectedWorkout = document.getElementById("selectedWorkout");
+const yearTitle = document.getElementById("yearTitle");
+const yearGrid = document.getElementById("yearGrid");
+const recentWorkouts = document.getElementById("recentWorkouts");
+const exerciseSelect = document.getElementById("exerciseSelect");
+const chartCanvas = document.getElementById("chart");
+const progressEmpty = document.getElementById("progressEmpty");
 
-let chart = null;
-let exercises = [];
 let sessions = [];
-let displayedMonth = new Date();
-let selectedDate = getDateKey(new Date());
+let splits = [];
+let exercises = [];
+let chart = null;
 
-function getDateKey(date) {
+const today = new Date();
+let displayedDate = new Date(today.getFullYear(), today.getMonth(), 1);
+let selectedDate = dateKey(today);
+let view = "month";
+
+function dateKey(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-
   return `${year}-${month}-${day}`;
 }
 
-function formatDate(dateKey) {
-  const [year, month, day] = dateKey.split("-").map(Number);
-
-  return new Date(year, month - 1, day).toLocaleDateString(
-      undefined,
-      { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-  );
+function parseDateKey(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
-function renderCalendar() {
-  const year = displayedMonth.getFullYear();
-  const month = displayedMonth.getMonth();
+function formatDate(value, options = { month: "long", day: "numeric", year: "numeric" }) {
+  return parseDateKey(value).toLocaleDateString(undefined, options);
+}
 
-  calendarMonth.textContent = displayedMonth.toLocaleDateString(
-      undefined,
-      { month: "long", year: "numeric" }
-  );
+function makeElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+  return element;
+}
 
-  calendar.replaceChildren();
+function sessionsForDate(value) {
+  return sessions.filter((session) => session.date === value);
+}
 
-  const firstDay = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+function sessionsForMonth(year, month) {
+  return sessions.filter((session) => {
+    const date = parseDateKey(session.date);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+}
 
-  // Monday-first calendar: Monday = 0, Sunday = 6.
-  const offset = (firstDay.getDay() + 6) % 7;
+function sessionsForYear(year) {
+  return sessions.filter((session) => parseDateKey(session.date).getFullYear() === year);
+}
 
-  for (let i = 0; i < offset; i++) {
-    const blank = document.createElement("span");
-    blank.className = "calendar-blank";
-    calendar.appendChild(blank);
+function getSplitColor(session) {
+  return session.splitColor || splits.find((split) => split.id === session.splitId)?.color || "#E99B9B";
+}
+
+function updateCount() {
+  const year = displayedDate.getFullYear();
+
+  if (view === "year") {
+    countLabel.textContent = `WORKOUTS IN ${year}`;
+    workoutCount.textContent = sessionsForYear(year).length;
+  } else {
+    countLabel.textContent = `WORKOUTS IN ${displayedDate.toLocaleDateString(undefined, { month: "long", year: "numeric" }).toUpperCase()}`;
+    workoutCount.textContent = sessionsForMonth(year, displayedDate.getMonth()).length;
   }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day);
-    const dateKey = getDateKey(date);
-    const daySessions = sessions.filter((session) => session.date === dateKey);
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "calendar-day";
-    button.textContent = String(day);
-    button.setAttribute("aria-label", formatDate(dateKey));
-
-    if (daySessions.length > 0) {
-      button.classList.add("has-workout");
-
-      const dots = document.createElement("span");
-      dots.className = "calendar-dots";
-
-      for (const session of daySessions.slice(0, 4)) {
-        const dot = document.createElement("span");
-        dot.className = "calendar-dot";
-        dot.style.backgroundColor = session.splitColor ?? "#E99B9B";
-        dots.appendChild(dot);
-      }
-
-      button.appendChild(dots);
-      button.title = daySessions.map((item) => item.splitName).join(", ");
-    }
-
-    if (dateKey === selectedDate) {
-      button.classList.add("selected");
-      button.setAttribute("aria-pressed", "true");
-    } else {
-      button.setAttribute("aria-pressed", "false");
-    }
-
-    button.addEventListener("click", () => {
-      selectedDate = dateKey;
-      renderCalendar();
-      renderSelectedDay();
-    });
-
-    calendar.appendChild(button);
-  }
-
-  renderLegend();
 }
 
 function renderLegend() {
   calendarLegend.replaceChildren();
 
-  const splits = new Map();
+  const usedSplitIds = new Set(
+      sessions.map((session) => session.splitId)
+  );
+
+  const usedNames = new Set();
 
   for (const session of sessions) {
-    if (!splits.has(session.splitId)) {
-      splits.set(session.splitId, {
-        name: session.splitName,
-        color: session.splitColor ?? "#E99B9B"
-      });
-    }
-  }
+    const name = session.splitName || "Workout";
+    if (usedNames.has(name)) continue;
+    usedNames.add(name);
 
-  if (splits.size === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "Your completed workouts will appear here.";
-    calendarLegend.appendChild(empty);
-    return;
-  }
-
-  for (const split of splits.values()) {
-    const item = document.createElement("div");
-    item.className = "legend-item";
-
-    const swatch = document.createElement("span");
-    swatch.className = "legend-swatch";
-    swatch.style.backgroundColor = split.color;
-
-    const name = document.createElement("span");
-    name.textContent = split.name;
-
-    item.append(swatch, name);
+    const item = makeElement("div", "legend-item");
+    const swatch = makeElement("span", "legend-swatch");
+    swatch.style.backgroundColor = getSplitColor(session);
+    item.append(swatch, makeElement("span", "", name));
     calendarLegend.appendChild(item);
+  }
+
+  if (calendarLegend.children.length === 0) {
+    calendarLegend.appendChild(makeElement("p", "", "Your completed workouts will appear here."));
   }
 }
 
 function renderSelectedDay() {
-  selectedDateElement.textContent = formatDate(selectedDate);
+  const daySessions = sessionsForDate(selectedDate);
+  selectedDayTitle.textContent = formatDate(selectedDate);
   selectedWorkout.replaceChildren();
 
-  const daySessions = sessions.filter(
-      (session) => session.date === selectedDate
-  );
-
   if (daySessions.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "status-message";
-    empty.textContent = "No workouts recorded for this day.";
-    selectedWorkout.appendChild(empty);
+    selectedWorkout.appendChild(makeElement("p", "status-message", "No completed workouts on this day."));
     return;
   }
 
   for (const session of daySessions) {
-    const item = document.createElement("div");
-    item.className = "workout-session";
-
-    const swatch = document.createElement("span");
-    swatch.className = "legend-swatch";
-    swatch.style.backgroundColor = session.splitColor ?? "#E99B9B";
-
-    const name = document.createElement("strong");
-    name.textContent = session.splitName ?? "Workout";
-
-    item.append(swatch, name);
-    selectedWorkout.appendChild(item);
+    const row = makeElement("div", "workout-session");
+    const swatch = makeElement("span", "legend-swatch");
+    swatch.style.backgroundColor = getSplitColor(session);
+    row.append(swatch, makeElement("span", "", session.splitName || "Workout"));
+    selectedWorkout.appendChild(row);
   }
 }
 
-function changeMonth(amount) {
-  displayedMonth = new Date(
-      displayedMonth.getFullYear(),
-      displayedMonth.getMonth() + amount,
-      1
-  );
+function renderMonthCalendar() {
+  const year = displayedDate.getFullYear();
+  const month = displayedDate.getMonth();
 
-  renderCalendar();
-}
-
-async function init(user) {
-  sessions = await getWorkoutSessions(user);
-
-  document.getElementById("prevMonth").addEventListener("click", () => {
-    changeMonth(-1);
+  monthTitle.textContent = displayedDate.toLocaleDateString(undefined, {
+    month: "long",
+    year: "numeric"
   });
 
-  document.getElementById("nextMonth").addEventListener("click", () => {
-    changeMonth(1);
-  });
+  calendarGrid.replaceChildren();
 
-  renderCalendar();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    calendarGrid.appendChild(makeElement("div", "calendar-blank"));
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const value = dateKey(new Date(year, month, day));
+    const daySessions = sessionsForDate(value);
+    const button = makeElement("button", "calendar-day", String(day));
+    button.type = "button";
+
+    if (daySessions.length) button.classList.add("has-workout");
+    if (value === selectedDate) button.classList.add("selected");
+    if (value === dateKey(today)) button.classList.add("today");
+
+    if (daySessions.length) {
+      const dots = makeElement("span", "calendar-dots");
+      const colors = [...new Set(daySessions.map(getSplitColor))].slice(0, 3);
+
+      for (const color of colors) {
+        const dot = makeElement("span", "calendar-dot");
+        dot.style.backgroundColor = color;
+        dots.appendChild(dot);
+      }
+      button.appendChild(dots);
+    }
+
+    button.addEventListener("click", () => {
+      selectedDate = value;
+      renderMonthCalendar();
+      renderSelectedDay();
+    });
+
+    calendarGrid.appendChild(button);
+  }
+
+  renderLegend();
   renderSelectedDay();
+}
 
-  exercises = await getExercises(user);
+function renderYearCalendar() {
+  const year = displayedDate.getFullYear();
+  yearTitle.textContent = String(year);
+  yearGrid.replaceChildren();
 
-  select.replaceChildren();
+  for (let month = 0; month < 12; month++) {
+    const card = makeElement("button", "mini-month");
+    card.type = "button";
+    card.appendChild(makeElement("strong", "mini-month-title",
+        new Date(year, month, 1).toLocaleDateString(undefined, { month: "long" })
+    ));
 
-  for (const exercise of exercises) {
-    const option = document.createElement("option");
-    option.value = exercise.id;
-    option.textContent = exercise.name;
-    select.appendChild(option);
+    const grid = makeElement("span", "mini-month-grid");
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      grid.appendChild(makeElement("span", "mini-day empty"));
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const value = dateKey(new Date(year, month, day));
+      const dayElement = makeElement("span", "mini-day", String(day));
+      const daySessions = sessionsForDate(value);
+
+      if (daySessions.length) {
+        dayElement.classList.add("has-workout");
+        dayElement.style.backgroundColor = getSplitColor(daySessions[0]);
+      }
+      grid.appendChild(dayElement);
+    }
+
+    card.appendChild(grid);
+    card.addEventListener("click", () => {
+      displayedDate = new Date(year, month, 1);
+      selectedDate = dateKey(displayedDate);
+      setView("month");
+    });
+    yearGrid.appendChild(card);
   }
+}
 
-  if (exercises.length === 0) {
-    chartCanvas.hidden = true;
-    document.getElementById("progressEmpty").textContent =
-        "Add exercises to start tracking your progress.";
-    document.getElementById("progressEmpty").hidden = false;
+function renderRecentWorkouts() {
+  recentWorkouts.replaceChildren();
+
+  const latest = [...sessions]
+      .sort((a, b) => (b.completedAt || b.date || "").localeCompare(a.completedAt || a.date || ""))
+      .slice(0, 2);
+
+  if (latest.length === 0) {
+    recentWorkouts.appendChild(makeElement("p", "status-message", "No workouts completed yet."));
     return;
   }
 
-  const load = () => runSafely(() => renderChart(user, select.value));
+  for (const session of latest) {
+    const button = makeElement("button", "recent-workout");
+    button.type = "button";
 
-  select.addEventListener("change", load);
-  await renderChart(user, select.value);
+    const stripe = makeElement("span", "recent-workout-stripe");
+    stripe.style.backgroundColor = getSplitColor(session);
+
+    const swatch = makeElement("span", "legend-swatch");
+    swatch.style.backgroundColor = getSplitColor(session);
+
+    const details = makeElement("span", "recent-workout-details");
+    details.append(
+        makeElement("span", "recent-workout-date", formatDate(session.date, { month: "long", day: "numeric" })),
+        makeElement("strong", "", session.splitName || "Workout")
+    );
+
+    button.append(stripe, swatch, details, makeElement("span", "recent-workout-arrow", "›"));
+    button.addEventListener("click", () => {
+      displayedDate = new Date(parseDateKey(session.date).getFullYear(), parseDateKey(session.date).getMonth(), 1);
+      selectedDate = session.date;
+      setView("month");
+    });
+
+    recentWorkouts.appendChild(button);
+  }
 }
 
-async function renderChart(user, exerciseId) {
-  const logs = await getWeightLogs(user, exerciseId);
-  const exercise = exercises.find((item) => item.id === exerciseId);
+function setView(nextView) {
+  view = nextView;
+  const isMonth = view === "month";
 
-  if (chart) {
-    chart.destroy();
-    chart = null;
+  monthCalendar.hidden = false;
+  document.getElementById("monthCalendar").hidden = !isMonth;
+  yearCalendar.hidden = isMonth;
+  monthViewButton.classList.toggle("active", isMonth);
+  yearViewButton.classList.toggle("active", !isMonth);
+
+  updateCount();
+  if (isMonth) renderMonthCalendar();
+  else renderYearCalendar();
+}
+
+async function renderChart(exerciseId) {
+  if (!exerciseId) {
+    if (chart) chart.destroy();
+    chartCanvas.hidden = true;
+    progressEmpty.textContent = "Choose an exercise to see your weight progression.";
+    progressEmpty.hidden = false;
+    return;
   }
 
-  if (logs.length === 0) {
+  const logs = await getWeightLogs(currentUser, exerciseId);
+  const exercise = exercises.find((item) => item.id === exerciseId);
+
+  if (chart) chart.destroy();
+
+  if (!logs.length) {
     chartCanvas.hidden = true;
-
-    document.getElementById("progressEmpty").textContent =
-        `No weight logs for ${exercise?.name ?? "this exercise"}.`;
-
-    document.getElementById("progressEmpty").hidden = false;
+    progressEmpty.textContent = `No weight logs for ${exercise?.name ?? "this exercise"}.`;
+    progressEmpty.hidden = false;
     return;
   }
 
   chartCanvas.hidden = false;
-  document.getElementById("progressEmpty").hidden = true;
+  progressEmpty.hidden = true;
 
   chart = new Chart(chartCanvas, {
     type: "line",
@@ -251,17 +310,65 @@ async function renderChart(user, exerciseId) {
       datasets: [{
         label: exercise?.name ?? "Weight",
         data: logs.map((log) => log.weight),
-        tension: 0.25
+        tension: 0.3,
+        fill: true
       }]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
       scales: {
         y: { beginAtZero: false }
       }
     }
   });
+}
+
+let currentUser;
+
+async function init(user) {
+  currentUser = user;
+
+  [sessions, splits, exercises] = await Promise.all([
+    getWorkoutSessions(user),
+    getSplits(user),
+    getExercises(user)
+  ]);
+
+  exerciseSelect.replaceChildren();
+  exerciseSelect.appendChild(new Option("Select an exercise", ""));
+
+  for (const exercise of exercises) {
+    exerciseSelect.appendChild(new Option(exercise.name, exercise.id));
+  }
+
+  document.getElementById("previousMonth").addEventListener("click", () => {
+    displayedDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() - 1, 1);
+    selectedDate = dateKey(displayedDate);
+    updateCount();
+    renderMonthCalendar();
+  });
+
+  document.getElementById("nextMonth").addEventListener("click", () => {
+    displayedDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() + 1, 1);
+    selectedDate = dateKey(displayedDate);
+    updateCount();
+    renderMonthCalendar();
+  });
+
+  monthViewButton.addEventListener("click", () => setView("month"));
+  yearViewButton.addEventListener("click", () => setView("year"));
+
+  exerciseSelect.addEventListener("change", () => {
+    runSafely(() => renderChart(exerciseSelect.value));
+  });
+
+  renderRecentWorkouts();
+  setView("month");
+  await renderChart("");
 }
 
 initPage(init).catch(console.error);
