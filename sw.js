@@ -1,4 +1,4 @@
-const CACHE_NAME = "workout-froggy-v7";
+const CACHE_NAME = "workout-froggy-v8";
 
 const APP_SHELL = [
   "./",
@@ -42,38 +42,100 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+      caches.open(CACHE_NAME)
+          .then(cache => cache.addAll(APP_SHELL))
+          .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(
-      keys
-        .filter((key) => key !== CACHE_NAME)
-        .map((key) => caches.delete(key))
-    )).then(() => self.clients.claim())
+      caches.keys()
+          .then(keys =>
+              Promise.all(
+                  keys
+                      .filter(key => key !== CACHE_NAME)
+                      .map(key => caches.delete(key))
+              )
+          )
+          .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
 
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+
+  // Only handle same-origin requests
+  if (url.origin !== self.location.origin) return;
+
+  // Network-first for CSS and JavaScript
+  if (
+      url.pathname.endsWith(".css") ||
+      url.pathname.endsWith(".js")
+  ) {
+    event.respondWith(
+        fetch(request)
+            .then(response => {
+              if (response.ok) {
+                const copy = response.clone();
+
+                caches.open(CACHE_NAME)
+                    .then(cache => cache.put(request, copy));
+              }
+
+              return response;
+            })
+            .catch(() => caches.match(request))
+    );
+
+    return;
+  }
+
+  // Network-first for HTML navigation
+  if (request.mode === "navigate") {
+    event.respondWith(
+        fetch(request)
+            .then(response => {
+              if (response.ok) {
+                const copy = response.clone();
+
+                caches.open(CACHE_NAME)
+                    .then(cache => cache.put(request, copy));
+              }
+
+              return response;
+            })
+            .catch(() =>
+                caches.match(request).then(cached => {
+                  return cached || caches.match("./index.html");
+                })
+            )
+    );
+
+    return;
+  }
+
+  // Cache-first for other static assets
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+      caches.match(request).then(cached => {
+        if (cached) return cached;
 
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === "opaque") {
+        return fetch(request).then(response => {
+          if (!response.ok || response.type === "opaque") {
+            return response;
+          }
+
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME)
+              .then(cache => cache.put(request, copy));
+
           return response;
-        }
-
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-        return response;
-      });
-    })
+        });
+      })
   );
 });
