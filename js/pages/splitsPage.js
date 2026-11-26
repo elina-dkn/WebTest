@@ -26,5 +26,12 @@ async function render(user) {
     );
   }
 }
+const result = initPage((user) => render(user));
 
+console.log("initPage return value:", result);
+console.log("Is Promise:", result instanceof Promise);
+
+result?.catch?.((error) => {
+    console.error("Initialization error:", error);
+});
 initPage((user) => render(user)).catch(console.error);
