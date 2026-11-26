@@ -5,18 +5,23 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 export function requireAuth(callback) {
-  return onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "auth.html";
-      return;
-    }
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribe();
 
-    try {
-      await callback(user);
-    } catch (error) {
-      console.error(error);
-      showGlobalError(error);
-    }
+      try {
+        if (!user) {
+          window.location.href = "login.html";
+          resolve();
+          return;
+        }
+
+        await callback(user);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
   });
 }
 
