@@ -68,3 +68,27 @@ export async function syncMemberships(user, exerciseId, selectedSplitIds, existi
 export async function deleteSplitAndMemberships(user, splitId) {
   await splitRepository.deleteSplit(user, splitId);
 }
+
+export async function updateSplit(user, splitId, changes) {
+  const cleanChanges = {};
+
+  if (typeof changes.name === "string") {
+    const name = changes.name.trim();
+
+    if (!name) throw new Error("Split name is required.");
+
+    cleanChanges.name = name;
+  }
+
+  if (typeof changes.color === "string") {
+    if (!/^#[0-9A-Fa-f]{6}$/.test(changes.color)) {
+      throw new Error("Invalid split color.");
+    }
+
+    cleanChanges.color = changes.color;
+  }
+
+  if (Object.keys(cleanChanges).length === 0) return;
+
+  await splitRepository.update(user, splitId, cleanChanges);
+}

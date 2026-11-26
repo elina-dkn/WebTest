@@ -5,6 +5,7 @@ import {
   doc,
   getDocs,
   setDoc,
+  updateDoc,
   writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { normalizeSplit, userCollection } from "./helpers.js";
@@ -18,8 +19,17 @@ export async function getAll(user) {
 
 export async function create(user, name) {
   const ref = doc(collection(db, ...userCollection(user, "splits")));
-  await setDoc(ref, { name });
+
+  await setDoc(ref, {
+    name,
+    color: "#E99B9B"
+  });
+
   return ref;
+}
+
+export async function update(user, splitId, changes) {
+  await updateDoc(getRef(user, splitId), changes);
 }
 
 export function getRef(user, splitId) {

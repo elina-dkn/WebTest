@@ -12,10 +12,12 @@ export function normalizeExercise(snapshot) {
 
 export function normalizeSplit(snapshot) {
   const data = snapshot.data();
+
   return {
     id: snapshot.id,
     ref: snapshot.ref,
-    name: data.name ?? "Unnamed split"
+    name: data.name ?? "Unnamed split",
+    color: data.color ?? "#E99B9B"
   };
 }
 

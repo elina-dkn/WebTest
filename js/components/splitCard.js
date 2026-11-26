@@ -1,9 +1,21 @@
+
 import { showGlobalError } from "../core/auth.js";
 import { createElement } from "./dom.js";
 
 export function createSplitCard({ split, onOpen, onDelete }) {
-  const card = createElement("article", { className: "card split-card" });
+  const card = createElement("article", {
+    className: "card split-card"
+  });
+
   const title = createElement("b", { text: split.name });
+
+  const color = createElement("span", {
+    className: "split-color-indicator"
+  });
+
+  color.style.backgroundColor = split.color ?? "#E99B9B";
+  color.setAttribute("aria-label", `${split.name} color`);
+
   const deleteButton = createElement("button", {
     className: "delete-btn",
     text: "Delete",
@@ -13,6 +25,7 @@ export function createSplitCard({ split, onOpen, onDelete }) {
   deleteButton.addEventListener("click", async (event) => {
     event.stopPropagation();
     deleteButton.disabled = true;
+
     try {
       await onDelete();
       card.remove();
@@ -22,7 +35,8 @@ export function createSplitCard({ split, onOpen, onDelete }) {
     }
   });
 
-  card.append(title, deleteButton);
+  card.append(color, title, deleteButton);
+
   card.addEventListener("click", async () => {
     try {
       await onOpen();
@@ -30,5 +44,6 @@ export function createSplitCard({ split, onOpen, onDelete }) {
       showGlobalError(error);
     }
   });
+
   return card;
 }
